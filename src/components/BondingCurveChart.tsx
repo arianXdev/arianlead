@@ -22,13 +22,40 @@ export const BondingCurveChart = () => {
 
   const generateCurveData = () => {
     const data = [];
-    for (let i = 0; i <= 200; i += 10) {
+    // Generate more comprehensive test data with realistic price progression
+    for (let i = 0; i <= 500; i += 25) {
       const supply = i * 1000;
       const price = calculatePrice(supply);
       data.push({ supply, price });
     }
     return data;
   };
+
+  // Generate random test transaction data
+  const generateTestTransactions = () => {
+    const types = ['Buy', 'Sell'];
+    const times = ['2 min ago', '5 min ago', '10 min ago', '15 min ago', '23 min ago', '35 min ago', '1 hr ago', '2 hr ago'];
+    const transactions = [];
+    
+    for (let i = 0; i < 8; i++) {
+      const isBuy = Math.random() > 0.5;
+      const tokens = Math.floor(Math.random() * 500) + 10;
+      const price = 0.0001 + (Math.random() * 0.0003);
+      const ethAmount = (tokens * price).toFixed(4);
+      
+      transactions.push({
+        time: times[i],
+        type: isBuy ? 'Buy' : 'Sell',
+        tokens: isBuy ? `+${tokens}` : `-${tokens}`,
+        ethAmount,
+        price: price.toFixed(6),
+        isBuy
+      });
+    }
+    return transactions;
+  };
+
+  const testTransactions = generateTestTransactions();
 
   const curveData = generateCurveData();
 
@@ -171,7 +198,7 @@ export const BondingCurveChart = () => {
             {/* Token Amount Input */}
             <div>
               <label className="block text-sm font-oxanium text-muted-foreground mb-2">
-                Number of Tokens
+                Number of Tokens <span className="text-xs text-muted-foreground/70">(ARIAN)</span>
               </label>
               <div className="flex items-center space-x-2">
                 <Button
@@ -211,7 +238,7 @@ export const BondingCurveChart = () => {
             {/* ETH Amount Input */}
             <div>
               <label className="block text-sm font-oxanium text-muted-foreground mb-2">
-                ETH Amount
+                ETH Amount <span className="text-xs text-muted-foreground/70">(WEI: {ethAmount ? (parseFloat(ethAmount) * 1e18).toLocaleString() : '0'})</span>
               </label>
               <div className="flex items-center space-x-2">
                 <Button
@@ -275,33 +302,19 @@ export const BondingCurveChart = () => {
               </tr>
             </thead>
             <tbody>
-              <tr className="border-b border-border/50">
-                <td className="py-3 text-muted-foreground">2 min ago</td>
-                <td className="py-3">
-                  <span className="text-primary font-medium">Buy</span>
-                </td>
-                <td className="py-3">+100</td>
-                <td className="py-3">0.0100</td>
-                <td className="py-3">0.0001</td>
-              </tr>
-              <tr className="border-b border-border/50">
-                <td className="py-3 text-muted-foreground">5 min ago</td>
-                <td className="py-3">
-                  <span className="text-secondary font-medium">Sell</span>
-                </td>
-                <td className="py-3">-50</td>
-                <td className="py-3">0.0050</td>
-                <td className="py-3">0.0001</td>
-              </tr>
-              <tr>
-                <td className="py-3 text-muted-foreground">10 min ago</td>
-                <td className="py-3">
-                  <span className="text-primary font-medium">Buy</span>
-                </td>
-                <td className="py-3">+200</td>
-                <td className="py-3">0.0200</td>
-                <td className="py-3">0.0001</td>
-              </tr>
+              {testTransactions.map((tx, index) => (
+                <tr key={index} className={index < testTransactions.length - 1 ? "border-b border-border/50" : ""}>
+                  <td className="py-3 text-muted-foreground">{tx.time}</td>
+                  <td className="py-3">
+                    <span className={`font-medium ${tx.isBuy ? 'text-primary' : 'text-secondary'}`}>
+                      {tx.type}
+                    </span>
+                  </td>
+                  <td className="py-3">{tx.tokens}</td>
+                  <td className="py-3">{tx.ethAmount} ETH</td>
+                  <td className="py-3">{tx.price} ETH</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>

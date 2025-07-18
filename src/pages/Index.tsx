@@ -1,4 +1,6 @@
 import { HeroSection } from '@/components/HeroSection';
+import { AboutArian } from '@/components/AboutArian';
+import { Footer } from '@/components/Footer';
 import { Header } from '@/components/Header';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -214,6 +216,9 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      <AboutArian />
+      <Footer />
     </div>
   );
 };
