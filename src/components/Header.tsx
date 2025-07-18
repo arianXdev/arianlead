@@ -97,10 +97,10 @@ export const Header = () => {
         <div className="flex items-center space-x-4">
           <Button
             onClick={connectWallet}
-            className="gradient-primary text-black font-oxanium font-medium font-bold hover-lift"
+            className="gradient-primary text-black font-primary font-medium font-bold hover-lift"
           >
             <Wallet className="mr-2 h-4 w-4 font-primary font-bold" />
-            {isWalletConnected ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}` : 'Connect Your Wallet With LOVE 💙'}
+            {isWalletConnected ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}` : 'Connect Your Wallet w/ LOVE 💙'}
           </Button>
 
           {/* Mobile Menu Button */}
