@@ -99,8 +99,8 @@ export const Header = () => {
             onClick={connectWallet}
             className="gradient-primary text-black font-oxanium font-medium hover-lift"
           >
-            <Wallet className="mr-2 h-4 w-4" />
-            {isWalletConnected ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}` : 'Connect Wallet'}
+            <Wallet className="mr-2 h-4 w-4 font-primary font-bold" />
+            {isWalletConnected ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}` : 'Connect Your Wallet with LOVE 💙'}
           </Button>
 
           {/* Mobile Menu Button */}
