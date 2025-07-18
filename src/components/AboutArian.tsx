@@ -11,7 +11,7 @@ export const AboutArian = () => {
             Meet the Visionary
           </h2>
           <p className="text-xl text-muted-foreground font-oxanium max-w-2xl mx-auto">
-            Learn about Arian Hosseini, the blockchain developer and computer science enthusiast behind ArianLead
+            === Learn about Arian H., the Software Engineer behind ArianLead ===
           </p>
         </div>
 
@@ -24,10 +24,10 @@ export const AboutArian = () => {
                   Arian Hosseini
                 </h3>
                 <p className="text-lg text-secondary font-oxanium font-medium">
-                  Software Developer | Blockchain Developer | Computer Science Enthusiast
+                  Software Engineer | Blockchain Developer | Computer Science Enthusiast
                 </p>
                 <p className="text-muted-foreground font-oxanium">
-                  Iran | 500+ Connections
+                  United States | 500+ Connections
                 </p>
               </div>
 
