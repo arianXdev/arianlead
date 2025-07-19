@@ -6,7 +6,7 @@ export const Footer = () => {
   return (
     <footer className="bg-gradient-card border-t border-gradient cyber-glow">
       <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
           {/* Brand Section */}
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-3 mb-4">
@@ -125,12 +125,45 @@ export const Footer = () => {
               </li>
             </ul>
           </div>
+
+          {/* Our Ecosystem */}
+          <div>
+            <h4 className="font-primary font-semibold text-gradient mb-4">Our Ecosystem</h4>
+            <ul className="space-y-2 font-oxanium">
+              <li>
+                <a
+                  href="https://blockcenter.org"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-muted-foreground hover:text-primary transition-cyber flex items-center"
+                >
+                  Blockcenter <ExternalLink className="h-3 w-3 ml-1" />
+                </a>
+                <p className="text-xs text-muted-foreground/70 mt-1">
+                  Blockchain Development House
+                </p>
+              </li>
+              <li>
+                <a
+                  href="https://paperscore.org"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-muted-foreground hover:text-primary transition-cyber flex items-center"
+                >
+                  PaperScore <ExternalLink className="h-3 w-3 ml-1" />
+                </a>
+                <p className="text-xs text-muted-foreground/70 mt-1">
+                  Decentralized Academic Journal
+                </p>
+              </li>
+            </ul>
+          </div>
         </div>
 
         {/* Bottom Bar */}
         <div className="border-t border-border/50 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-muted-foreground font-oxanium text-sm">
-            © 2024 ArianLead. All rights reserved. Powered by blockchain technology.
+            © 2024 ArianLead - A Blockcenter Product. All rights reserved. Powered by blockchain technology.
           </p>
           <div className="flex space-x-6 mt-4 md:mt-0">
             <a
