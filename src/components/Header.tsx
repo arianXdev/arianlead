@@ -1,15 +1,66 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Menu, X, Wallet, ExternalLink } from 'lucide-react';
+import { Menu, X, Wallet, ExternalLink, AlertCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { contractService, CONTRACTS } from '@/lib/contracts';
 import arianleadLogo from '@/assets/arianlead-logo.png';
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isWalletConnected, setIsWalletConnected] = useState(false);
   const [walletAddress, setWalletAddress] = useState('');
+  const [isCorrectNetwork, setIsCorrectNetwork] = useState(true);
   const { toast } = useToast();
+
+  // Check wallet connection on mount
+  useEffect(() => {
+    checkWalletConnection();
+    if (window.ethereum) {
+      window.ethereum.on('accountsChanged', handleAccountsChanged);
+      window.ethereum.on('chainChanged', handleChainChanged);
+    }
+    
+    return () => {
+      if (window.ethereum) {
+        window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
+        window.ethereum.removeListener('chainChanged', handleChainChanged);
+      }
+    };
+  }, []);
+
+  const checkWalletConnection = async () => {
+    if (typeof window.ethereum !== 'undefined') {
+      try {
+        const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+        if (accounts.length > 0) {
+          setIsWalletConnected(true);
+          setWalletAddress(accounts[0]);
+          
+          // Check network
+          const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+          setIsCorrectNetwork(parseInt(chainId, 16) === CONTRACTS.SEPOLIA_CHAIN_ID);
+        }
+      } catch (error) {
+        console.error('Error checking wallet connection:', error);
+      }
+    }
+  };
+
+  const handleAccountsChanged = (accounts: string[]) => {
+    if (accounts.length === 0) {
+      setIsWalletConnected(false);
+      setWalletAddress('');
+    } else {
+      setWalletAddress(accounts[0]);
+    }
+  };
+
+  const handleChainChanged = (chainId: string) => {
+    setIsCorrectNetwork(parseInt(chainId, 16) === CONTRACTS.SEPOLIA_CHAIN_ID);
+    // Reload the page to reset any contract instances
+    window.location.reload();
+  };
 
   const connectWallet = async () => {
     if (isWalletConnected) {
@@ -32,10 +83,34 @@ export const Header = () => {
         if (accounts.length > 0) {
           setIsWalletConnected(true);
           setWalletAddress(accounts[0]);
-          toast({
-            title: "Wallet Connected",
-            description: `Connected to ${accounts[0].slice(0, 6)}...${accounts[0].slice(-4)}`,
-          });
+          
+          // Check if on correct network
+          const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+          const isCorrect = parseInt(chainId, 16) === CONTRACTS.SEPOLIA_CHAIN_ID;
+          setIsCorrectNetwork(isCorrect);
+          
+          if (!isCorrect) {
+            toast({
+              title: "Wrong Network",
+              description: "Please switch to Sepolia testnet to use the application.",
+              variant: "destructive",
+            });
+          } else {
+            // Initialize contract service
+            try {
+              await contractService.initialize();
+              toast({
+                title: "Wallet Connected",
+                description: `Connected to ${accounts[0].slice(0, 6)}...${accounts[0].slice(-4)} on Sepolia`,
+              });
+            } catch (contractError: any) {
+              toast({
+                title: "Contract Connection Failed",
+                description: contractError.message || "Failed to connect to smart contracts.",
+                variant: "destructive",
+              });
+            }
+          }
         }
       } catch (error: any) {
         console.error('Error connecting wallet:', error);
@@ -49,6 +124,22 @@ export const Header = () => {
       toast({
         title: "MetaMask Not Found",
         description: "Please install MetaMask browser extension.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const switchToSepolia = async () => {
+    try {
+      await contractService.switchToSepolia();
+      toast({
+        title: "Network Switched",
+        description: "Successfully switched to Sepolia testnet.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Network Switch Failed",
+        description: error.message || "Failed to switch to Sepolia testnet.",
         variant: "destructive",
       });
     }
@@ -95,12 +186,36 @@ export const Header = () => {
 
         {/* Wallet Connect & Mobile Menu */}
         <div className="flex items-center space-x-4">
+          {/* Network Warning */}
+          {isWalletConnected && !isCorrectNetwork && (
+            <Button
+              onClick={switchToSepolia}
+              variant="destructive"
+              size="sm"
+              className="hidden md:flex"
+            >
+              <AlertCircle className="mr-2 h-4 w-4" />
+              Switch to Sepolia
+            </Button>
+          )}
+          
           <Button
             onClick={connectWallet}
-            className="gradient-primary text-black font-primary font-medium font-bold hover-lift"
+            className={`font-primary font-medium font-bold hover-lift ${
+              isWalletConnected && !isCorrectNetwork 
+                ? 'bg-destructive text-destructive-foreground' 
+                : 'gradient-primary text-black'
+            }`}
           >
             <Wallet className="mr-2 h-4 w-4 font-primary font-bold" />
-            {isWalletConnected ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}` : 'Connect Your Wallet w/ LOVE 💙'}
+            {isWalletConnected ? (
+              <>
+                {!isCorrectNetwork && <AlertCircle className="mr-2 h-4 w-4" />}
+                {`${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`}
+              </>
+            ) : (
+              'Connect Your Wallet w/ LOVE 💙'
+            )}
           </Button>
 
           {/* Mobile Menu Button */}
